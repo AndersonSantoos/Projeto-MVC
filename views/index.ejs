@@ -1,0 +1,65 @@
+<!-- views/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="/styles.css">
+</head>
+<body>
+  <h1>Formulário de Cadastro de Usuários</h1>
+  <form action="/add" method="POST">
+    <input type="text" name="nome" placeholder="Nome">
+    <input type="text" name="idade" placeholder="Idade">
+    <input type="text" name="profissao" placeholder="Profissão">
+    <input type="text" name="salario" placeholder="Salário">
+    <button type="submit">Cadastrar</button>
+  </form>
+
+  <h2>Lista de Usuários</h2>
+  <ul>
+    <% users.forEach(user => { %>
+      <li>
+        <span>ID: <%= user.id %></span>
+        <span>Nome: <%= user.nome %></span>
+        <span>Idade: <%= user.idade %> anos</span>
+        <span>Profissão: <%= user.profissao %></span>
+        <span>Salário: R$ <%= user.salario %></span>
+        <button data-user-id="<%= user.id %>" data-action="edit">Editar</button>
+        <button data-user-id="<%= user.id %>" data-action="delete">Excluir</button>
+
+      </li>
+    <% }); %>
+  </ul>
+
+  </script>
+
+  <script>
+    const buttons = document.querySelectorAll('button[data-action]');
+    
+    buttons.forEach(button => {
+      button.addEventListener('click', (event) => {
+        const userId = event.target.getAttribute('data-user-id');
+        const action = event.target.getAttribute('data-action');
+        
+        if (action === 'edit') {
+          window.location.href = `/edit/${userId}`;
+        } else if (action === 'delete') {
+          if (confirm('Tem certeza de que deseja excluir este usuário?')) {
+            fetch(`/delete/${userId}`, {
+              method: 'DELETE',
+            })
+              .then(response => {
+                if (response.ok) {
+                  window.location.reload(); // Recarrega a página após a exclusão
+                }
+              })
+              .catch(error => {
+                console.error('Erro ao excluir o usuário', error);
+              });
+          }
+        }
+      });
+    });
+  </script>
+  
+</body>
+</html>
